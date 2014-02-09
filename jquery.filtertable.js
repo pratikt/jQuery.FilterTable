@@ -31,6 +31,7 @@
 				highlightClass:    'alt',               // class applied to cells containing the filter term
 				inputName:         '',                  // name of filter input field
 				inputType:         'search',            // tag name of the filter input tag
+				filterInputId:		'filterTxtBox',		// Id of custom txt input field
 				label:             'Filter:',           // text to precede the filter input tag
 				minRows:           8,                   // don't show the filter on tables with less than this number of rows
 				placeholder:       'search this table', // HTML5 placeholder text for the filter field
@@ -76,8 +77,15 @@
 				if (settings.containerClass!=='') { // add any classes that need to be added
 					container.addClass(settings.containerClass);
 				}
-				container.prepend(settings.label+' '); // add the label for the filter field
-				filter = $('<input type="'+settings.inputType+'" placeholder="'+settings.placeholder+'" name="'+settings.inputName+'" />'); // build the filter field
+
+				if(settings.filterInputId)
+					filter= $('#' + settings.filterInputId);
+				else
+				{
+					container.prepend(settings.label+' '); // add the label for the filter field
+					filter = $('<input type="'+settings.inputType+'" placeholder="'+settings.placeholder+'" name="'+settings.inputName+'" />'); // build the filter field
+				}
+				
 				if ($.fn.bindWithDelay) { // does bindWithDelay() exist?
 					filter.bindWithDelay('keyup', function() { // bind doFiltering() to keyup (delayed)
 						doFiltering(t, $(this).val());
@@ -90,7 +98,8 @@
 				filter.bind('click search', function() { // bind doFiltering() to click and search events
 					doFiltering(t, $(this).val());
 				});
-				container.append(filter); // add the filter field to the container
+				if(!settings.filterInputId)
+					container.append(filter); // add the filter field to the container
 				if (settings.quickList.length>0) { // are there any quick list items to add?
 					quicks = settings.quickListGroupTag ? $('<'+settings.quickListGroupTag+' />') : container;
 					$.each(settings.quickList, function(index, value) { // for each quick list item...
